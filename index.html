@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elektronik Sınav - Giriş</title>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --header-bg: #0d3d6e;
+            --border-color: #ccc;
+            --light-gray-bg: #f0f2f5;
+            --text-dark: #333;
+            --text-light: #555;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: var(--light-gray-bg); }
+        .header-banner { background-color: var(--header-bg); color: white; padding: 30px 20px; text-align: center; }
+        .header-banner h1 { font-size: 1.6em; font-weight: 500; margin: 10px 0; }
+        .header-banner h2 { font-size: 1.1em; font-weight: 300; margin: 0; }
+        .login-container { display: flex; justify-content: center; align-items: flex-start; padding: 20px; }
+        .login-box { background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: var(--shadow); width: 100%; max-width: 400px; border-top: 5px solid var(--primary-color); }
+        .form-group { margin-bottom: 20px; }
+        .form-group .form-label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-dark); }
+        .form-group .input-row { display: flex; flex-direction: column; gap: 15px; }
+        .form-group input[type="text"], .form-group input[type="tel"] { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 1em; box-sizing: border-box; }
+        .captcha-group { display: flex; align-items: center; gap: 10px; }
+        .captcha-image { background-color: #f0f0f0; border: 1px solid var(--border-color); padding: 5px 10px; border-radius: 4px; font-family: 'Courier New', Courier, monospace; font-size: 1.5em; font-weight: bold; letter-spacing: 4px; text-decoration: line-through; color: var(--text-light); user-select: none; }
+        .captcha-controls button { background: none; border: none; cursor: pointer; font-size: 1.5em; color: var(--text-light); }
+        .captcha-group input { flex: 1; }
+        .btn-submit { width: 100%; background-color: var(--primary-color); color: white; padding: 15px; border: none; border-radius: 4px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: background-color 0.3s; }
+        .btn-submit:hover { background-color: var(--primary-dark); }
+
+        /* YENİ: Kategori Seçim Butonu Stilleri */
+        .kategori-secim-alani { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+        .kategori-sec-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 1em;
+            font-weight: 500;
+            background-color: #fff;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .kategori-sec-btn:hover { background-color: #f0f8ff; }
+        .kategori-sec-btn.secildi {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+
+        /* YENİ: Modal (Pop-up) Stilleri */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5); z-index: 1000;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: white; padding: 25px 30px; border-radius: 8px;
+            width: 90%; max-width: 350px;
+            transform: scale(0.9); transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .modal-overlay.show .modal-content { transform: scale(1); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee;}
+        .modal-header h2 { margin: 0; font-size: 1.3em; color: var(--text-dark); }
+        .modal-close { background: none; border: none; font-size: 1.8em; color: var(--text-light); cursor: pointer; line-height: 1; }
+        .modal-options { display: flex; flex-direction: column; gap: 10px; }
+        .modal-options button {
+            width: 100%; padding: 15px; border-radius: 6px;
+            font-size: 1.1em; font-weight: 600; cursor: pointer;
+            border: 2px solid transparent; transition: all 0.2s ease;
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .modal-options button:hover { background-color: var(--primary-dark); }
+        .error-message { color: #d9534f; font-size: 0.9em; margin-top: 5px; display: none; }
+
+        @media (min-width: 480px) {
+            .form-group .input-row { flex-direction: row; gap: 10px; }
+            .login-container { padding-top: 50px; }
+            .login-box { padding: 40px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header-banner">
+        <h1>Elektronik Sınav Uygulaması</h1>
+        <h2><strong>Giriş Ekranı<strong></h2>
+    </header>
+    <div class="login-container">
+        <div class="login-box">
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label" for="isim">İsim Soyisim</label>
+                    <div class="input-row">
+                        <input type="text" id="isim" placeholder="İsim" required>
+                        <input type="text" id="soyisim" placeholder="Soyisim" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="telefon">Telefon Numarası</label>
+                    <input type="tel" id="telefon" placeholder="5xx xxx xx xx" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Sınav Kategorisi</label>
+                    <div class="kategori-secim-alani">
+                         <button type="button" id="kategori-sec-btn" class="kategori-sec-btn">Kategori Seçiniz</button>
+                         <input type="hidden" id="kategori-secim-deger" required>
+                         <span id="kategori-hata-mesaji" class="error-message">Lütfen bir kategori seçiniz.</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="captcha-input">Resimdeki kodu giriniz</label>
+                    <div class="captcha-group">
+                        <div class="captcha-controls"><button type="button" id="refresh-captcha-btn">&#x21bb;</button></div>
+                        <div id="captcha-image" class="captcha-image"></div>
+                        <input type="text" id="captcha-input" required autocomplete="off">
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit">Sınava Giriş Yap</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="kategori-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Kategori Seçin</h2>
+                <button type="button" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-options">
+                <button type="button" data-value="grammar">Grammar</button>
+                <button type="button" data-value="vocabulary">Vocabulary</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAvaEaHtTwcuCDBIggJGd4w_nzJQM5UlmY",
+            authDomain: "teacher-adminpanel.firebaseapp.com",
+            projectId: "teacher-adminpanel",
+            storageBucket: "teacher-adminpanel.firebasestorage.app",
+            messagingSenderId: "901735644134",
+            appId: "1:901735644134:web:a6aa575a0754de1333f427",
+            measurementId: "G-68BWZJYCK9"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // --- YENİ: Pop-up ve Seçim Mantığı ---
+        const kategoriModal = document.getElementById('kategori-modal');
+        const kategoriSecBtn = document.getElementById('kategori-sec-btn');
+        const kategoriDegerInput = document.getElementById('kategori-secim-deger');
+        const kategoriHataMesaji = document.getElementById('kategori-hata-mesaji');
+
+        // Pop-up'ı açma
+        kategoriSecBtn.addEventListener('click', () => {
+            kategoriModal.classList.add('show');
+        });
+
+        // Pop-up'ı kapatma
+        function closeModal() {
+            kategoriModal.classList.remove('show');
+        }
+        kategoriModal.querySelector('.modal-close').addEventListener('click', closeModal);
+        kategoriModal.addEventListener('click', (event) => {
+            if (event.target === kategoriModal) {
+                closeModal();
+            }
+        });
+
+        // Pop-up içinden kategori seçme
+        kategoriModal.querySelector('.modal-options').addEventListener('click', (event) => {
+            if (event.target.tagName === 'BUTTON') {
+                const secilenDeger = event.target.dataset.value;
+                const secilenMetin = event.target.textContent;
+
+                kategoriDegerInput.value = secilenDeger; // Gizli input'a değeri ata
+                kategoriSecBtn.textContent = `Seçildi: ${secilenMetin}`; // Ana butonun metnini güncelle
+                kategoriSecBtn.classList.add('secildi'); // Ana butona 'seçildi' stili ekle
+                kategoriHataMesaji.style.display = 'none'; // Hata mesajını gizle
+                
+                closeModal();
+            }
+        });
+        // --- BİTİŞ: Yeni Pop-up Mantığı ---
+
+
+        function generateCaptchaCode(length = 5) {
+            const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+            let result = "";
+            for (let i = 0; i < length; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+
+        function refreshCaptcha() {
+            document.getElementById('captcha-image').textContent = generateCaptchaCode();
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            // Kategori seçimi kontrolü
+            const sinavTuru = kategoriDegerInput.value;
+            if (!sinavTuru) {
+                kategoriHataMesaji.style.display = 'block';
+                return;
+            }
+
+            // Captcha kontrolü
+            const correctCaptcha = document.getElementById('captcha-image').textContent;
+            const userCaptcha = document.getElementById('captcha-input').value;
+            if (userCaptcha.toLowerCase() !== correctCaptcha.toLowerCase()) {
+                alert('Güvenlik kodu hatalı! Lütfen tekrar deneyin.');
+                refreshCaptcha();
+                document.getElementById('captcha-input').value = '';
+                return;
+            }
+
+            try {
+                await signInAnonymously(auth);
+                const isim = document.getElementById('isim').value;
+                const soyisim = document.getElementById('soyisim').value;
+                const telefon = document.getElementById('telefon').value;
+                
+                sessionStorage.setItem('kullaniciIsim', isim);
+                sessionStorage.setItem('kullaniciSoyisim', soyisim);
+                sessionStorage.setItem('kullaniciTelefon', telefon);
+                sessionStorage.setItem('sinavTuru', sinavTuru); // Değeri gizli input'tan al
+
+                window.location.href = 'sinav.html';
+            } catch (error) {
+                console.error("Firebase Anonymous sign-in failed: ", error);
+                alert("Sisteme giriş yapılırken bir hata oluştu. Lütfen internet bağlantınızı ve Firebase ayarlarınızı kontrol edin.");
+            }
+        }
+
+        window.onload = function() {
+            refreshCaptcha();
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+            document.getElementById('refresh-captcha-btn').addEventListener('click', refreshCaptcha);
+        };
+    </script>
+</body>
+</html>
