@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elektronik Sınav - Giriş</title>
+
     <style>
         :root {
             --primary-color: #007bff;
@@ -24,79 +25,45 @@
         .form-group { margin-bottom: 20px; }
         .form-group .form-label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-dark); }
         .form-group .input-row { display: flex; flex-direction: column; gap: 15px; }
-        .form-group input[type="text"], .form-group input[type="tel"] { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 1em; box-sizing: border-box; }
+        .form-group input[type="text"], .form-group input[type="tel"] { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 1em; box-sizing: border-box; transition: box-shadow 0.2s; }
+        .form-group input[type="text"]:focus, .form-group input[type="tel"]:focus { box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); border-color: var(--primary-color); outline: none; }
         .captcha-group { display: flex; align-items: center; gap: 10px; }
         .captcha-image { background-color: #f0f0f0; border: 1px solid var(--border-color); padding: 5px 10px; border-radius: 4px; font-family: 'Courier New', Courier, monospace; font-size: 1.5em; font-weight: bold; letter-spacing: 4px; text-decoration: line-through; color: var(--text-light); user-select: none; }
         .captcha-controls button { background: none; border: none; cursor: pointer; font-size: 1.5em; color: var(--text-light); }
         .captcha-group input { flex: 1; }
         .btn-submit { width: 100%; background-color: var(--primary-color); color: white; padding: 15px; border: none; border-radius: 4px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: background-color 0.3s; }
         .btn-submit:hover { background-color: var(--primary-dark); }
-
-        /* YENİ: Kategori Seçim Butonu Stilleri */
         .kategori-secim-alani { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
-        .kategori-sec-btn {
-            width: 100%;
-            padding: 12px;
-            font-size: 1em;
-            font-weight: 500;
-            background-color: #fff;
-            color: var(--primary-color);
-            border: 2px solid var(--primary-color);
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+        .kategori-sec-btn { width: 100%; padding: 12px; font-size: 1em; font-weight: 500; background-color: #fff; color: var(--primary-color); border: 2px solid var(--primary-color); border-radius: 4px; cursor: pointer; text-align: left; transition: all 0.2s ease; }
         .kategori-sec-btn:hover { background-color: #f0f8ff; }
-        .kategori-sec-btn.secildi {
-            background-color: var(--primary-color);
-            color: white;
-            font-weight: bold;
-        }
-
-        /* YENİ: Modal (Pop-up) Stilleri */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5); z-index: 1000;
-            display: flex; justify-content: center; align-items: center;
-            opacity: 0; visibility: hidden; transition: all 0.3s ease;
-        }
+        .kategori-sec-btn.secildi { background-color: var(--primary-color); color: white; font-weight: bold; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
         .modal-overlay.show { opacity: 1; visibility: visible; }
-        .modal-content {
-            background: white; padding: 25px 30px; border-radius: 8px;
-            width: 90%; max-width: 350px;
-            transform: scale(0.9); transition: all 0.3s ease;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-        }
+        .modal-content { background: white; padding: 25px 30px; border-radius: 8px; width: 90%; max-width: 350px; transform: scale(0.9); transition: all 0.3s ease; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
         .modal-overlay.show .modal-content { transform: scale(1); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee;}
         .modal-header h2 { margin: 0; font-size: 1.3em; color: var(--text-dark); }
         .modal-close { background: none; border: none; font-size: 1.8em; color: var(--text-light); cursor: pointer; line-height: 1; }
-        .modal-options { display: flex; flex-direction: column; gap: 10px; }
-        .modal-options button {
-            width: 100%; padding: 15px; border-radius: 6px;
-            font-size: 1.1em; font-weight: 600; cursor: pointer;
-            border: 2px solid transparent; transition: all 0.2s ease;
-            background-color: var(--primary-color);
-            color: white;
-        }
+        .modal-options { display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto; padding-right: 10px;}
+        .modal-options button { width: 100%; padding: 15px; border-radius: 6px; font-size: 1.1em; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s ease; background-color: var(--primary-color); color: white; flex-shrink: 0; }
         .modal-options button:hover { background-color: var(--primary-dark); }
         .error-message { color: #d9534f; font-size: 0.9em; margin-top: 5px; display: none; }
-
         @media (min-width: 480px) {
             .form-group .input-row { flex-direction: row; gap: 10px; }
             .login-container { padding-top: 50px; }
             .login-box { padding: 40px; }
         }
     </style>
-</head>
+    </head>
 <body>
     <header class="header-banner">
         <h1>Elektronik Sınav Uygulaması</h1>
         <h2><strong>Giriş Ekranı<strong></h2>
     </header>
+
     <div class="login-container">
         <div class="login-box">
-            <form id="login-form">
+            <form id="login-form" onsubmit="return false;">
                 <div class="form-group">
                     <label class="form-label" for="isim">İsim Soyisim</label>
                     <div class="input-row">
@@ -125,7 +92,7 @@
                         <input type="text" id="captcha-input" required autocomplete="off">
                     </div>
                 </div>
-                <button type="submit" class="btn-submit">Sınava Giriş Yap</button>
+                <button type="submit" id="submit-btn" class="btn-submit">Sınava Giriş Yap</button>
             </form>
         </div>
     </div>
@@ -139,122 +106,138 @@
             <div class="modal-options">
                 <button type="button" data-value="grammar">Grammar</button>
                 <button type="button" data-value="vocabulary">Vocabulary</button>
+                <button type="button" data-value="preposition">Preposition</button>
+                <button type="button" data-value="sentence_completion">Sentence Completion</button>
+                <button type="button" data-value="paragraph_completion">Paragraph Completion</button>
+                <button type="button" data-value="situation">Situation</button>
+                <button type="button" data-value="dialogue">Dialogue</button>
+                <button type="button" data-value="translations">Translations</button>
+                <button type="button" data-value="mismatching">Mismatching</button>
+                <button type="button" data-value="paraphrasing">Paraphrasing</button>
             </div>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAvaEaHtTwcuCDBIggJGd4w_nzJQM5UlmY",
-            authDomain: "teacher-adminpanel.firebaseapp.com",
-            projectId: "teacher-adminpanel",
-            storageBucket: "teacher-adminpanel.firebasestorage.app",
-            messagingSenderId: "901735644134",
-            appId: "1:901735644134:web:a6aa575a0754de1333f427",
-            measurementId: "G-68BWZJYCK9"
-        };
-        
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-
-        // --- YENİ: Pop-up ve Seçim Mantığı ---
-        const kategoriModal = document.getElementById('kategori-modal');
-        const kategoriSecBtn = document.getElementById('kategori-sec-btn');
-        const kategoriDegerInput = document.getElementById('kategori-secim-deger');
-        const kategoriHataMesaji = document.getElementById('kategori-hata-mesaji');
-
-        // Pop-up'ı açma
-        kategoriSecBtn.addEventListener('click', () => {
-            kategoriModal.classList.add('show');
-        });
-
-        // Pop-up'ı kapatma
-        function closeModal() {
-            kategoriModal.classList.remove('show');
-        }
-        kategoriModal.querySelector('.modal-close').addEventListener('click', closeModal);
-        kategoriModal.addEventListener('click', (event) => {
-            if (event.target === kategoriModal) {
-                closeModal();
-            }
-        });
-
-        // Pop-up içinden kategori seçme
-        kategoriModal.querySelector('.modal-options').addEventListener('click', (event) => {
-            if (event.target.tagName === 'BUTTON') {
-                const secilenDeger = event.target.dataset.value;
-                const secilenMetin = event.target.textContent;
-
-                kategoriDegerInput.value = secilenDeger; // Gizli input'a değeri ata
-                kategoriSecBtn.textContent = `Seçildi: ${secilenMetin}`; // Ana butonun metnini güncelle
-                kategoriSecBtn.classList.add('secildi'); // Ana butona 'seçildi' stili ekle
-                kategoriHataMesaji.style.display = 'none'; // Hata mesajını gizle
-                
-                closeModal();
-            }
-        });
-        // --- BİTİŞ: Yeni Pop-up Mantığı ---
-
-
-        function generateCaptchaCode(length = 5) {
-            const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-            let result = "";
-            for (let i = 0; i < length; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return result;
-        }
-
-        function refreshCaptcha() {
-            document.getElementById('captcha-image').textContent = generateCaptchaCode();
-        }
-
-        async function handleLogin(event) {
-            event.preventDefault();
+    <script>
+        // Sayfanın tamamen yüklendiğinden emin olduktan sonra kodları çalıştır
+        document.addEventListener('DOMContentLoaded', function() {
+            // Firebase projesinin bağlantı bilgileri
+            const firebaseConfig = {
+                apiKey: "AIzaSyAvaEaHtTwcuCDBIggJGd4w_nzJQM5UlmY",
+                authDomain: "teacher-adminpanel.firebaseapp.com",
+                projectId: "teacher-adminpanel",
+                storageBucket: "teacher-adminpanel.appspot.com",
+                messagingSenderId: "901735644134",
+                appId: "1:901735644134:web:a6aa575a0754de1333f427",
+                measurementId: "G-68BWZJYCK9"
+            };
             
-            // Kategori seçimi kontrolü
-            const sinavTuru = kategoriDegerInput.value;
-            if (!sinavTuru) {
-                kategoriHataMesaji.style.display = 'block';
-                return;
+            // Firebase'i başlat
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+
+            // Gerekli HTML elemanlarını seç ve değişkenlere ata
+            const kategoriModal = document.getElementById('kategori-modal');
+            const kategoriSecBtn = document.getElementById('kategori-sec-btn');
+            const kategoriDegerInput = document.getElementById('kategori-secim-deger');
+            const kategoriHataMesaji = document.getElementById('kategori-hata-mesaji');
+            const modalOptionsContainer = kategoriModal.querySelector('.modal-options');
+            const closeModalBtn = kategoriModal.querySelector('.modal-close');
+            const captchaImage = document.getElementById('captcha-image');
+            const captchaInput = document.getElementById('captcha-input');
+            const refreshCaptchaBtn = document.getElementById('refresh-captcha-btn');
+            const loginForm = document.getElementById('login-form');
+            const submitBtn = document.getElementById('submit-btn');
+
+            // --- Modal (Pop-up) Fonksiyonları ---
+            function openModal() { kategoriModal.classList.add('show'); }
+            function closeModal() { kategoriModal.classList.remove('show'); }
+
+            kategoriSecBtn.addEventListener('click', openModal);
+            closeModalBtn.addEventListener('click', closeModal);
+            kategoriModal.addEventListener('click', (event) => {
+                if (event.target === kategoriModal) { closeModal(); }
+            });
+
+            // Pop-up içindeki bir kategori butonuna tıklandığında...
+            modalOptionsContainer.addEventListener('click', (event) => {
+                if (event.target.tagName === 'BUTTON') {
+                    const secilenDeger = event.target.dataset.value;
+                    const secilenMetin = event.target.textContent;
+
+                    kategoriDegerInput.value = secilenDeger; // Arka plandaki gizli input'un değerini ayarla
+                    kategoriSecBtn.textContent = secilenMetin; // Ana butonun metnini değiştir
+                    kategoriSecBtn.classList.add('secildi'); // Ana butona "seçildi" stili ekle
+                    kategoriHataMesaji.style.display = 'none'; // Hata mesajını gizle
+                    closeModal(); // Pop-up'ı kapat
+                }
+            });
+
+            // --- Güvenlik Kodu (Captcha) Fonksiyonları ---
+            function generateCaptchaCode(length = 5) {
+                const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+                let result = "";
+                for (let i = 0; i < length; i++) {
+                    result += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return result;
             }
 
-            // Captcha kontrolü
-            const correctCaptcha = document.getElementById('captcha-image').textContent;
-            const userCaptcha = document.getElementById('captcha-input').value;
-            if (userCaptcha.toLowerCase() !== correctCaptcha.toLowerCase()) {
-                alert('Güvenlik kodu hatalı! Lütfen tekrar deneyin.');
-                refreshCaptcha();
-                document.getElementById('captcha-input').value = '';
-                return;
+            function refreshCaptcha() {
+                captchaImage.textContent = generateCaptchaCode();
+                captchaInput.value = ''; // Input'u temizle
+            }
+            refreshCaptchaBtn.addEventListener('click', refreshCaptcha);
+
+            // --- Giriş Yapma Fonksiyonu ---
+            function handleLogin() {
+                // Kategori seçilmiş mi diye kontrol et
+                if (!kategoriDegerInput.value) {
+                    kategoriHataMesaji.style.display = 'block';
+                    return;
+                }
+
+                // Güvenlik kodu doğru mu diye kontrol et
+                if (captchaInput.value.toLowerCase() !== captchaImage.textContent.toLowerCase()) {
+                    alert('Güvenlik kodu hatalı! Lütfen tekrar deneyin.');
+                    refreshCaptcha();
+                    return;
+                }
+
+                // Firebase ile sisteme giriş yap ve bilgileri kaydet
+                auth.signInAnonymously()
+                    .then(() => {
+                        sessionStorage.setItem('kullaniciIsim', document.getElementById('isim').value);
+                        sessionStorage.setItem('kullaniciSoyisim', document.getElementById('soyisim').value);
+                        sessionStorage.setItem('kullaniciTelefon', document.getElementById('telefon').value);
+                        sessionStorage.setItem('sinavTuru', kategoriDegerInput.value);
+
+                        // Her şey tamamsa sınav sayfasına yönlendir
+                        window.location.href = 'sinav.html';
+                    })
+                    .catch((error) => {
+                        console.error("Firebase giriş hatası: ", error);
+                        alert("Sisteme giriş yapılırken bir hata oluştu. Lütfen internet bağlantınızı kontrol edin.");
+                    });
             }
 
-            try {
-                await signInAnonymously(auth);
-                const isim = document.getElementById('isim').value;
-                const soyisim = document.getElementById('soyisim').value;
-                const telefon = document.getElementById('telefon').value;
-                
-                sessionStorage.setItem('kullaniciIsim', isim);
-                sessionStorage.setItem('kullaniciSoyisim', soyisim);
-                sessionStorage.setItem('kullaniciTelefon', telefon);
-                sessionStorage.setItem('sinavTuru', sinavTuru); // Değeri gizli input'tan al
+            // Giriş Yap butonuna tıklandığında...
+            submitBtn.addEventListener('click', (event) => {
+                event.preventDefault(); // Formun normal gönderimini engelle
+                // Formdaki tüm 'required' alanlar dolu mu diye kontrol et
+                if(loginForm.checkValidity()){
+                    handleLogin(); // Doluysa giriş fonksiyonunu çalıştır
+                } else {
+                    loginForm.reportValidity(); // Boş alan varsa tarayıcının uyarı vermesini sağla
+                }
+            });
 
-                window.location.href = 'sinav.html';
-            } catch (error) {
-                console.error("Firebase Anonymous sign-in failed: ", error);
-                alert("Sisteme giriş yapılırken bir hata oluştu. Lütfen internet bağlantınızı ve Firebase ayarlarınızı kontrol edin.");
-            }
-        }
-
-        window.onload = function() {
+            // Sayfa ilk yüklendiğinde bir güvenlik kodu oluştur
             refreshCaptcha();
-            document.getElementById('login-form').addEventListener('submit', handleLogin);
-            document.getElementById('refresh-captcha-btn').addEventListener('click', refreshCaptcha);
-        };
+        });
     </script>
 </body>
 </html>
