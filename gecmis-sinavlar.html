@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geçmiş Sınav Sonuçları</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0d3d6e; --primary-light: #1a5a96;
+            --secondary-color: #6c757d; --secondary-dark: #5a6268;
+            --danger-color: #d9534f; --danger-dark: #c9302c;
+            --success-color: #28a745;
+            --background-color: #f4f7fa; --card-background: #ffffff;
+            --text-color: #333; --text-light: #555;
+            --border-color: #e0e0e0; --shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.8em;
+        }
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .controls button {
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .back-button {
+            background-color: var(--secondary-color);
+        }
+        .back-button:hover {
+            background-color: var(--secondary-dark);
+        }
+        .clear-button {
+            background-color: var(--danger-color);
+        }
+        .clear-button:hover {
+            background-color: var(--danger-dark);
+        }
+        .history-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        .history-card {
+            background-color: var(--card-background);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            border-left: 5px solid var(--primary-light);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .history-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-header .title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        .card-header .date {
+            font-size: 0.9em;
+            color: var(--text-light);
+            white-space: nowrap;
+            margin-left: 15px;
+        }
+        .card-body {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .card-stats {
+            display: flex;
+            gap: 20px;
+            font-weight: 500;
+            flex-wrap: wrap;
+        }
+        .card-stats span {
+            font-size: 1.1em;
+        }
+        .card-stats .net {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        .review-button {
+            background-color: var(--primary-light);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .review-button:hover {
+            background-color: var(--primary-color);
+        }
+        .no-history {
+            text-align: center;
+            padding: 50px;
+            background-color: var(--card-background);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header class="header">
+            <h1>Geçmiş Sınav Sonuçlarınız</h1>
+        </header>
+
+        <div class="controls">
+            <button class="back-button" onclick="window.location.href='index.html'">Giriş Sayfasına Dön</button>
+            <button class="clear-button" id="gecmisi-temizle-btn">Tüm Geçmişi Sil</button>
+        </div>
+
+        <div class="history-list" id="history-list-container">
+            </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const listContainer = document.getElementById('history-list-container');
+            const clearButton = document.getElementById('gecmisi-temizle-btn');
+
+            // Tarayıcının hafızasından geçmiş sınavları çekiyoruz
+            const sinavGecmisi = JSON.parse(localStorage.getItem('sinavGecmisi')) || [];
+
+            // Eğer hiç geçmiş sınav yoksa bir bilgilendirme mesajı göster
+            if (sinavGecmisi.length === 0) {
+                listContainer.innerHTML = '<div class="no-history"><h2>Görüntülenecek sınav geçmişi bulunamadı.</h2></div>';
+                clearButton.style.display = 'none'; // Geçmiş yoksa silme butonunu gizle
+                return;
+            }
+
+            // En yeni sınavın en üstte görünmesi için diziyi ters çeviriyoruz
+            [...sinavGecmisi].reverse().forEach((sonuc, index) => {
+                const originalIndex = sinavGecmisi.length - 1 - index;
+                const card = document.createElement('div');
+                card.className = 'history-card';
+                
+                // Her bir sınav sonucu için HTML kartını oluştur
+                card.innerHTML = `
+                    <div class="card-header">
+                        <span class="title">${sonuc.sinavTuru ? sonuc.sinavTuru.toUpperCase().replace('_', ' ') : 'BİLİNMEYEN'} SINAVI</span>
+                        <span class="date">${sonuc.tarih}</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-stats">
+                            <span class="net">Net: ${sonuc.netSayisi}</span>
+                            <span style="color: var(--success-color);">Doğru: ${sonuc.dogruSayisi}</span>
+                            <span style="color: var(--danger-color);">Yanlış: ${sonuc.yanlisSayisi}</span>
+                            <span style="color: var(--secondary-color);">Boş: ${sonuc.bosSayisi}</span>
+                        </div>
+                        <button class="review-button" data-index="${originalIndex}">Soruları İncele</button>
+                    </div>
+                `;
+                listContainer.appendChild(card);
+            });
+
+            // Sayfadaki tüm "İncele" butonlarına tıklama olayı atama
+            listContainer.addEventListener('click', function(event) {
+                if (event.target && event.target.classList.contains('review-button')) {
+                    const sinavIndex = event.target.dataset.index;
+                    const sinavData = sinavGecmisi[sinavIndex];
+                    
+                    // Seçilen sınavın verilerini geçici hafızaya kaydediyoruz
+                    sessionStorage.setItem('reviewData', JSON.stringify(sinavData));
+                    
+                    // İnceleme için sınav sayfasına yönlendiriyoruz
+                    window.location.href = 'sinav.html'; 
+                }
+            });
+
+            // "Tüm Geçmişi Sil" butonuna tıklama olayı atama
+            clearButton.addEventListener('click', function() {
+                if (confirm('Tüm sınav geçmişiniz kalıcı olarak silinecektir. Bu işlem geri alınamaz. Emin misiniz?')) {
+                    localStorage.removeItem('sinavGecmisi');
+                    alert('Sınav geçmişiniz başarıyla silindi.');
+                    location.reload(); // Sayfayı yenileyerek listeyi güncelle
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
